@@ -1,0 +1,19 @@
+server:
+  type: simple
+  applicationContextPath: /api
+  adminContextPath: /admin
+  connector:
+    type: http
+    port: 8080
+
+slackApiKey: <supply your own!>
+githubUsername: <supply your own!>
+githubPassword: <supply your own!>
+
+userMap:
+  - githubLogin: kevinjdinicola
+    slackName: kevinjdinicola
+
+watchedRepositories:
+  - repositoryName: kevinjdinicola/githubapitest
+    channelName: dev
