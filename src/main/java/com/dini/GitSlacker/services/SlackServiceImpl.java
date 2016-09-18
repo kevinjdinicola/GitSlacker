@@ -11,6 +11,8 @@ import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.replies.SlackMessageReply;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -20,6 +22,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  */
 public class SlackServiceImpl implements SlackService {
 
+    Logger log = LoggerFactory.getLogger(SlackServiceImpl.class);
 
     EventBus eventBus;
     SlackSession slackSession;
@@ -40,10 +43,12 @@ public class SlackServiceImpl implements SlackService {
 
     public void createNotifier(String gitRepo, String channel) {
         eventBus.register(new GitEventSubscriber(gitRepo, channel));
+        log.info("Slack service registered subscriber for events on " + gitRepo);
 
     }
 
     public void sendMessage(SlackPreparedMessage slackMsg, String channel) {
+        log.debug("Queueing message for slack channel " + channel);
         slackMessageQueue.offer(new QueuedMessage(channel, slackMsg));
     }
 
@@ -117,12 +122,14 @@ public class SlackServiceImpl implements SlackService {
                 return;
             }
 
+            log.info("Subscriber received github event for " + message+ ", posting to slack.");
+
             String slackName = null;
             try {
                 User user = userService.getUserByGitHubLogin(message.getEvent().getActorLogin());
                 slackName = user != null ? user.getSlackName() : null;
             } catch (IOException e) {
-                //TODO logging
+                log.error("An error occured resolving slack name.");
             }
 
             SlackPreparedMessage slackMsg = message.generateMessage(slackName);

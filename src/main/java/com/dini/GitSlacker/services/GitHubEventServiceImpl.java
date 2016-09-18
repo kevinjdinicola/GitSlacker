@@ -7,6 +7,8 @@ import io.dropwizard.setup.Environment;
 import lombok.Getter;
 import lombok.Setter;
 import org.kohsuke.github.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,6 +21,8 @@ import java.util.concurrent.TimeUnit;
  * Created by kevin on 9/13/16.
  */
 public class GitHubEventServiceImpl implements GitHubEventService {
+
+    Logger log = LoggerFactory.getLogger(GitHubEventServiceImpl.class);
 
     EventBus eventBus;
     GitHub github;
@@ -55,6 +59,7 @@ public class GitHubEventServiceImpl implements GitHubEventService {
     }
 
     private void checkRepositoryForEvents(RepositoryCheckTask repo) throws IOException {
+        log.debug("Checking repo " + repo + " for events after " + repo.getMostRecentEventDate().toString());
         GHRepository ghRepo = github.getRepository(repo.getRepositoryName());
         boolean foundAllNewEvents = false;
         PagedIterator<GHEventInfo> itr = ghRepo.listEvents().iterator();
@@ -72,7 +77,7 @@ public class GitHubEventServiceImpl implements GitHubEventService {
             GHEventInfo event = itr.next();
             // is this event newer than the date i have for the latest event?
             if (event.getCreatedAt().compareTo(repo.getMostRecentEventDate()) > 0) {
-
+                log.debug("Found new event id: " + event.getId());
                 GitHubEventMessage message = new GitHubEventMessage(repo.getRepositoryName(), event);
                 messagesToPost.add(message);
 
@@ -85,10 +90,12 @@ public class GitHubEventServiceImpl implements GitHubEventService {
 
             } else {
                 foundAllNewEvents = true;
+                log.debug("Finished searching for events");
             }
         }
 
         while (messagesToPost.size() > 0) {
+            log.debug("Posting " + messagesToPost.size() + " new events to event bus");
             eventBus.post(messagesToPost.pop());
         }
 
