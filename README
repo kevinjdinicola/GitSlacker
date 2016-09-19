@@ -1,3 +1,65 @@
-GitSlacker
+=========================================================
+=  GitSlacker                                           =
+=========================================================
 
-Add some content here
+GitSlacker is a Java application that can monitor changes
+to GitHub repositories and post changes and updates
+to configured slack channels.
+
+Git slacker also supports basic message based about
+the events that it reports.  For example:
+
+When GitSlacker mentions that a commit was pushed,
+you can say "what changed".  GitSlacker will then report
+a list of files that were changed in that commit.
+
+GitSlacker also understands messaging context.  If you
+say "show me some/filename.java" after git slacker has
+mentioned a commit that was pushed, it will give you
+a link to access the file in question.
+
+Git slacker was built upon the DropWizard framework to
+allow the ability to easily add API endpoints in
+the future for additional functionality.  DropWizard
+also provides a convenient application base,
+configuration provider, built in logging, and
+lifecycle management, in addition to the ability to
+add API endpoints.
+
+Configuration
+---------------------------------------------------------
+
+Configuration is simple.  GitSlacker will need to access
+your GitHub repositories (which may be private) so you'll
+need to provide GitSlacker with credentials for GitHub
+bit filling out these fields in the config:
+
+githubUsername: username
+githubPassword: password
+
+GitSlacker also needs access to your slack instance, so
+you will need to provide a bot api-key for GitSlacker
+to use.
+
+slackApiKey: some-long-slack-api-key
+
+GitSlacker needs to know what repositories you want it
+to monitor, and what channels it should report about
+them in. (make sure to invite gitslacker to those
+channels in Slack!)
+
+
+watchedRepositories:
+  - repositoryName: kevinjdinicola/githubapitest
+    channelName: dev
+  - repositoryName: kevinjdinicola/GitSlacker
+    channelName: other-dev
+
+Lastly, GitSlacker supports mapping from GitHub logins
+to slack handles.  There is no way to infer what a user's
+slack handle might be from their GitHub info, so you can
+specify them in a relationship in the config, like so.
+
+userMap:
+  - githubLogin: kevinjdinicola
+    slackName: kevin
