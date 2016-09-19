@@ -33,7 +33,7 @@ public class SlackMessageResponder implements SlackMessagePostedListener  {
 
     @Override
     public void onEvent(SlackMessagePosted slackMessagePosted, SlackSession slackSession) {
-        if (!generator.shouldRespond(slackMessagePosted)) {
+        if (slackMessagePosted.getSender().isBot() || !generator.shouldRespond(slackMessagePosted)) {
             return;
         }
 

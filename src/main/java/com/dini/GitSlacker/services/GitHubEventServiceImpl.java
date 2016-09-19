@@ -1,6 +1,6 @@
 package com.dini.GitSlacker.services;
 
-import com.dini.GitSlacker.models.GitHubEventMessage;
+import com.dini.GitSlacker.messages.GitHubEventMessage;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import io.dropwizard.setup.Environment;
@@ -115,7 +115,7 @@ public class GitHubEventServiceImpl implements GitHubEventService {
 
         public RepositoryCheckTask(String repositoryName) {
             this.repositoryName = repositoryName;
-            mostRecentEventDate = new Date(new Date().getTime());
+            mostRecentEventDate = new Date(new Date().getTime()-1000*60*60);
         }
 
     }

@@ -1,6 +1,6 @@
 package com.dini.GitSlacker.services;
 
-import com.dini.GitSlacker.models.GitHubEventMessage;
+import com.dini.GitSlacker.messages.GitHubEventMessage;
 import com.dini.GitSlacker.models.SlackMessageTemplate;
 import com.dini.GitSlacker.models.User;
 import com.dini.GitSlacker.responders.SlackMessageResponder;
@@ -9,8 +9,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.ullink.slack.simpleslackapi.*;
-import com.ullink.slack.simpleslackapi.events.SlackMessagePosted;
-import com.ullink.slack.simpleslackapi.listeners.SlackMessagePostedListener;
 import com.ullink.slack.simpleslackapi.replies.SlackMessageReply;
 import lombok.Getter;
 import lombok.Setter;
@@ -84,7 +82,9 @@ public class SlackServiceImpl implements SlackService {
     }
 
     private void updateMessageContextCache(HashMap<String, String> latestContextMap) {
-        latestContextMap.putAll(latestContextMap);
+        if (latestContextMap != null) {
+            contextMap.putAll(latestContextMap);
+        }
     }
 
     public void sendMessage(SlackMessageTemplate message, String channel) {

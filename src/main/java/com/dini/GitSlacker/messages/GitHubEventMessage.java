@@ -1,10 +1,10 @@
-package com.dini.GitSlacker.models;
+package com.dini.GitSlacker.messages;
 
+import com.dini.GitSlacker.models.SlackMessageTemplate;
 import com.dini.GitSlacker.util.GitHubMessageTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ullink.slack.simpleslackapi.SlackPreparedMessage;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.kohsuke.github.GHEvent;
@@ -80,7 +80,7 @@ public class GitHubEventMessage implements SlackMessageTemplate {
 
         if (type.equals(GHEvent.PUSH)) {
             newContexts.put("repository",repositoryName);
-            newContexts.put("commitSha", recursiveFindValue(payload,"ref"));
+            newContexts.put("commitSha", recursiveFindValue(payload,"head"));
         }
 
         return newContexts;

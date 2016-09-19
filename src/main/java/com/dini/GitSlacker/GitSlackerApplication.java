@@ -2,7 +2,7 @@ package com.dini.GitSlacker;
 
 import com.dini.GitSlacker.config.GitSlackerConfiguration;
 import com.dini.GitSlacker.healthcheck.DummyHealthCheck;
-import com.dini.GitSlacker.models.CommitInfoMessage;
+import com.dini.GitSlacker.responders.CommitFileInfoResponder;
 import com.dini.GitSlacker.responders.CommitInfoResponder;
 import com.dini.GitSlacker.services.GitHubEventService;
 import com.dini.GitSlacker.services.SlackService;
@@ -11,8 +11,6 @@ import com.google.inject.Injector;
 
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
-
-import java.io.IOException;
 
 /**
  * Created by kevin on 9/13/16.
@@ -54,7 +52,9 @@ public class GitSlackerApplication extends Application<GitSlackerConfiguration> 
 
         // register responders
         CommitInfoResponder ciResponder = new CommitInfoResponder();
+        CommitFileInfoResponder cfiResponder = new CommitFileInfoResponder();
         slackService.addResponder(ciResponder);
+        slackService.addResponder(cfiResponder);
 
     }
 }

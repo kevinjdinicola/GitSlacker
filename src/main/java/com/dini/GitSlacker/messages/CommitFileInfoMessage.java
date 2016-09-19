@@ -1,17 +1,25 @@
-package com.dini.GitSlacker.responders;
+package com.dini.GitSlacker.messages;
 
 import com.dini.GitSlacker.models.SlackMessageTemplate;
 import com.ullink.slack.simpleslackapi.SlackPreparedMessage;
+import org.kohsuke.github.GHCommit;
 
 import java.util.HashMap;
 
 /**
  * Created by kevin on 9/18/16.
  */
-public class SlackErrorMessage implements SlackMessageTemplate {
+public class CommitFileInfoMessage  implements SlackMessageTemplate {
+
+    GHCommit.File file;
+
+    public CommitFileInfoMessage(GHCommit.File file) {
+        this.file = file;
+    }
+
     @Override
     public HashMap<String, String> getLatestContextVariables() {
-        return new HashMap<>();
+        return null;
     }
 
     @Override
@@ -22,7 +30,7 @@ public class SlackErrorMessage implements SlackMessageTemplate {
     @Override
     public SlackPreparedMessage generateMessage() {
         return new SlackPreparedMessage.Builder()
-                .withMessage("I'm sorry, but and unexpected error occurred and I could not process your request.")
+                .withMessage("You can grab a copy from GitHub: " + file.getRawUrl().toString())
                 .build();
     }
 }
