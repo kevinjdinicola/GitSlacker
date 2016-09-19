@@ -2,6 +2,8 @@ package com.dini.GitSlacker;
 
 import com.dini.GitSlacker.config.GitSlackerConfiguration;
 import com.dini.GitSlacker.healthcheck.DummyHealthCheck;
+import com.dini.GitSlacker.models.CommitInfoMessage;
+import com.dini.GitSlacker.responders.CommitInfoResponder;
 import com.dini.GitSlacker.services.GitHubEventService;
 import com.dini.GitSlacker.services.SlackService;
 import com.google.inject.Guice;
@@ -49,6 +51,10 @@ public class GitSlackerApplication extends Application<GitSlackerConfiguration> 
             slackService.createNotifier(wRepo.getRepositoryName(),wRepo.getChannelName());
             gitHubEventService.registerRepository(wRepo.getRepositoryName());
         });
+
+        // register responders
+        CommitInfoResponder ciResponder = new CommitInfoResponder();
+        slackService.addResponder(ciResponder);
 
     }
 }

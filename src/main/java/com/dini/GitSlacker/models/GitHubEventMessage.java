@@ -7,20 +7,35 @@ import com.ullink.slack.simpleslackapi.SlackPreparedMessage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.kohsuke.github.GHEvent;
 import org.kohsuke.github.GHEventInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 
 /**
  * Created by kevin on 9/14/16.
  */
-@Getter
-@Setter
-@AllArgsConstructor
-public class GitHubEventMessage {
 
+public class GitHubEventMessage implements SlackMessageTemplate {
+
+    Logger log = LoggerFactory.getLogger(GitHubEventMessage.class);
+
+    @Getter
+    @Setter
     String repositoryName;
+    @Getter
+    @Setter
     GHEventInfo event;
+
+    public GitHubEventMessage(String repositoryName, GHEventInfo event) {
+        this.repositoryName = repositoryName;
+        this.event = event;
+    }
+
+    private ObjectNode payloadCache;
 
     private String[] mapTemplateArguments(ObjectNode payload, String[] argChoices) {
         String[] mappedArguments = new String[argChoices.length];
@@ -46,7 +61,45 @@ public class GitHubEventMessage {
         }
     }
 
-    public SlackPreparedMessage generateMessage(String slackActor) {
+    public HashMap<String, String> getLatestContextVariables() {
+        HashMap<String, String> newContexts = new HashMap<>();
+        GHEvent type = getEvent().getType();
+
+        ObjectNode payload = null;
+        try {
+            payload = getPayload();
+        } catch (NoSuchFieldException e) {
+            log.error("Error extracting latest context variables from message");
+            log.error(e.toString());
+            return newContexts;
+        } catch (IllegalAccessException e) {
+            log.error("Error extracting latest context variables from message");
+            log.error(e.toString());
+            return newContexts;
+        }
+
+        if (type.equals(GHEvent.PUSH)) {
+            newContexts.put("repository",repositoryName);
+            newContexts.put("commitSha", recursiveFindValue(payload,"ref"));
+        }
+
+        return newContexts;
+    }
+
+    public SlackPreparedMessage generateMessage() {
+        return generateMessage(null);
+    }
+
+    private ObjectNode getPayload() throws NoSuchFieldException, IllegalAccessException {
+        if (payloadCache == null) {
+            Field f = event.getClass().getDeclaredField("payload");
+            f.setAccessible(true);
+            payloadCache = (ObjectNode)f.get(event);
+        }
+        return payloadCache;
+    }
+
+    public SlackPreparedMessage generateMessage(HashMap<String, String> overrideArguments) {
         String message = "";
         GHEventInfo event = getEvent();
 
@@ -57,14 +110,18 @@ public class GitHubEventMessage {
                 return null;
             }
 
-            Field f = event.getClass().getDeclaredField("payload");
-            f.setAccessible(true);
-            ObjectNode payload = (ObjectNode)f.get(event);
+            ObjectNode payload = getPayload();
 
             // preload some convenient values not part of the event payload that are
             // useful in the template
-            payload.put("actor", slackActor != null ? "@"+slackActor : event.getActorLogin());
+            payload.put("actor", event.getActorLogin());
             payload.put("repository", repositoryName);
+
+            if (overrideArguments != null) {
+                for (String key : overrideArguments.keySet()) {
+                    payload.put(key,overrideArguments.get(key));
+                }
+            }
 
             message = String.format(template.getTemplate(), mapTemplateArguments(payload, template.getArguments()));
 
