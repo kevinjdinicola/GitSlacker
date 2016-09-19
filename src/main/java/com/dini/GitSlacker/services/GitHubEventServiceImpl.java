@@ -115,7 +115,7 @@ public class GitHubEventServiceImpl implements GitHubEventService {
 
         public RepositoryCheckTask(String repositoryName) {
             this.repositoryName = repositoryName;
-            mostRecentEventDate = new Date(new Date().getTime()-1000*60*60);
+            mostRecentEventDate = new Date(new Date().getTime());
         }
 
     }
