@@ -50,7 +50,7 @@ public class GitSlackerApplication extends Application<GitSlackerConfiguration> 
             gitHubEventService.registerRepository(wRepo.getRepositoryName());
         });
 
-        // register responders
+        // register message responders
         CommitInfoResponder ciResponder = new CommitInfoResponder();
         CommitFileInfoResponder cfiResponder = new CommitFileInfoResponder();
         slackService.addResponder(ciResponder);

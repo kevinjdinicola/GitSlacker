@@ -1,6 +1,5 @@
 package com.dini.GitSlacker.messages;
 
-import com.dini.GitSlacker.models.SlackMessageTemplate;
 import com.dini.GitSlacker.util.GitHubMessageTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -19,6 +18,14 @@ import java.util.HashMap;
  * Created by kevin on 9/14/16.
  */
 
+
+/*
+    This class can generate different message about a github event based on
+    the type of event that occurred.  It is designed to extract values out
+    of the event payload for use in its parameterized templates.  The
+    parameters used in the message templates can be overridden when the messages
+    are generated
+ */
 public class GitHubEventMessage implements SlackMessageTemplate {
 
     Logger log = LoggerFactory.getLogger(GitHubEventMessage.class);
@@ -37,6 +44,12 @@ public class GitHubEventMessage implements SlackMessageTemplate {
 
     private ObjectNode payloadCache;
 
+    /*
+    maps an array of parameter names
+    [title, commit_ref]
+    to an array of values from the event payload
+    ["i made a commit", "8def3..."]
+     */
     private String[] mapTemplateArguments(ObjectNode payload, String[] argChoices) {
         String[] mappedArguments = new String[argChoices.length];
 
@@ -47,6 +60,10 @@ public class GitHubEventMessage implements SlackMessageTemplate {
         return mappedArguments;
     }
 
+    /*
+    Useful for scanning the github event payload and plucking values
+    from it
+     */
     private String recursiveFindValue(JsonNode node, String valuePath) {
         int dotIndex = valuePath.indexOf(".");
         if (dotIndex < 0) {
@@ -61,6 +78,12 @@ public class GitHubEventMessage implements SlackMessageTemplate {
         }
     }
 
+    /*
+    Returns context variables about what this messages just said.
+    For instance, if this message was about a PUSH,
+    we should remember the repository and commit we are talking about,
+    so if a user asked about "what changed", well have some context to go on
+     */
     public HashMap<String, String> getLatestContextVariables() {
         HashMap<String, String> newContexts = new HashMap<>();
         GHEvent type = getEvent().getType();

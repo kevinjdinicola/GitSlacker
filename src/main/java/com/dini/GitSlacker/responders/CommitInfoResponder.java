@@ -2,7 +2,7 @@ package com.dini.GitSlacker.responders;
 
 import com.dini.GitSlacker.messages.CommitInfoMessage;
 import com.dini.GitSlacker.messages.SlackErrorMessage;
-import com.dini.GitSlacker.models.SlackMessageTemplate;
+import com.dini.GitSlacker.messages.SlackMessageTemplate;
 import com.ullink.slack.simpleslackapi.events.SlackMessagePosted;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;

@@ -9,6 +9,10 @@ import java.util.HashMap;
  */
 public enum GitHubMessageTemplate {
 
+    /*
+    Should any more templates be added, it may be desireable to move this
+    to an external file based config that can map message types to templates and desired parameters.
+     */
     IssueCommented( GHEvent.ISSUE_COMMENT, "%s commented on issue '%s' in %s",           new String[]{"actor", "issue.title", "repository"}),
     IssueCreated(   GHEvent.ISSUES,        "%s %s issue '%s' in %s",                 new String[]{"actor", "action", "issue.title", "repository"}),
     Push(           GHEvent.PUSH,          "%s pushed a commit to '%s' in %s (sha: %s)", new String[]{"actor","ref","repository", "head"}),

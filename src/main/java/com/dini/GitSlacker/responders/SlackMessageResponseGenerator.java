@@ -1,6 +1,6 @@
 package com.dini.GitSlacker.responders;
 
-import com.dini.GitSlacker.models.SlackMessageTemplate;
+import com.dini.GitSlacker.messages.SlackMessageTemplate;
 import com.ullink.slack.simpleslackapi.events.SlackMessagePosted;
 
 /**

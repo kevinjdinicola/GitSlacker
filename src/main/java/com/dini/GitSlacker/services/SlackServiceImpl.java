@@ -1,7 +1,7 @@
 package com.dini.GitSlacker.services;
 
 import com.dini.GitSlacker.messages.GitHubEventMessage;
-import com.dini.GitSlacker.models.SlackMessageTemplate;
+import com.dini.GitSlacker.messages.SlackMessageTemplate;
 import com.dini.GitSlacker.models.User;
 import com.dini.GitSlacker.responders.SlackMessageResponder;
 import com.dini.GitSlacker.responders.SlackMessageResponseGenerator;
@@ -71,6 +71,15 @@ public class SlackServiceImpl implements SlackService {
         slackMessageQueue.offer(new QueuedMessage(channel, slackMsg));
     }
 
+    public void sendMessage(SlackMessageTemplate message, String channel) {
+        sendMessage(message, channel, null);
+    }
+
+    public void sendMessage(SlackMessageTemplate message, String channel, HashMap<String, String> overrideArguments) {
+        updateMessageContextCache(message.getLatestContextVariables());
+        sendMessage(message.generateMessage(overrideArguments), channel);
+    }
+
     public HashMap<String, String> getContextMap() {
         return contextMap;
     }
@@ -85,11 +94,6 @@ public class SlackServiceImpl implements SlackService {
         if (latestContextMap != null) {
             contextMap.putAll(latestContextMap);
         }
-    }
-
-    public void sendMessage(SlackMessageTemplate message, String channel) {
-        updateMessageContextCache(message.getLatestContextVariables());
-        sendMessage(message.generateMessage(), channel);
     }
 
     private void setupSlackMessageQueue() {
@@ -178,10 +182,7 @@ public class SlackServiceImpl implements SlackService {
                 log.error("An error occured resolving slack name.");
             }
 
-            updateMessageContextCache(message.getLatestContextVariables());
-
-            SlackPreparedMessage slackMsg = message.generateMessage(overrideArguments);
-            sendMessage(slackMsg,channel);
+            sendMessage(message, channel, overrideArguments);
         }
     }
 }

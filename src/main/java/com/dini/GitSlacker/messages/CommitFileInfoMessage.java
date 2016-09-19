@@ -1,6 +1,5 @@
 package com.dini.GitSlacker.messages;
 
-import com.dini.GitSlacker.models.SlackMessageTemplate;
 import com.ullink.slack.simpleslackapi.SlackPreparedMessage;
 import org.kohsuke.github.GHCommit;
 

@@ -2,7 +2,7 @@ package com.dini.GitSlacker.responders;
 
 import com.dini.GitSlacker.messages.CommitFileInfoMessage;
 import com.dini.GitSlacker.messages.SlackErrorMessage;
-import com.dini.GitSlacker.models.SlackMessageTemplate;
+import com.dini.GitSlacker.messages.SlackMessageTemplate;
 import com.ullink.slack.simpleslackapi.events.SlackMessagePosted;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;
@@ -50,6 +50,10 @@ public class CommitFileInfoResponder implements SlackMessageResponseGenerator {
             GHRepository ghRepo = github.getRepository(repository);
             GHCommit ghCommit = ghRepo.getCommit(commitSha);
 
+            // Its probably best to return a URL to get the file from github
+            // that way a user who sees this in the chat but shouldn't have access
+            // to the repository cant bypass security and download files through a bot.
+            // (were this to be used in a real scenario)
             Optional<GHCommit.File> requestedFile = ghCommit.getFiles().stream()
                     .filter(file -> file.getFileName().equals(filename)).findFirst();
 

@@ -1,9 +1,7 @@
 package com.dini.GitSlacker.responders;
 
-import com.dini.GitSlacker.models.SlackMessageTemplate;
-import com.dini.GitSlacker.services.GitHubEventService;
+import com.dini.GitSlacker.messages.SlackMessageTemplate;
 import com.dini.GitSlacker.services.SlackService;
-import com.google.inject.Inject;
 import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.events.SlackMessagePosted;
 import com.ullink.slack.simpleslackapi.listeners.SlackMessagePostedListener;
@@ -22,6 +20,14 @@ public class SlackMessageResponder implements SlackMessagePostedListener  {
 
     protected SlackMessageResponseGenerator generator;
 
+    /*
+    A wrapper around a SlackMessageResponseGenerator,
+    this class provides the message event and all necessary information
+    to the response generator and, once a response is generated,
+    sends it to the slack service.
+
+    This allows the response generators to remain small and atomic.
+     */
     public <T extends SlackMessageResponseGenerator> SlackMessageResponder(
             SlackService slackService, GitHub gitHub, SlackMessageResponseGenerator generator) {
         this.slackService = slackService;

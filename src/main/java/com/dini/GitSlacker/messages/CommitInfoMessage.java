@@ -1,6 +1,5 @@
 package com.dini.GitSlacker.messages;
 
-import com.dini.GitSlacker.models.SlackMessageTemplate;
 import com.ullink.slack.simpleslackapi.SlackPreparedMessage;
 import org.kohsuke.github.GHCommit;
 
@@ -35,7 +34,7 @@ public class CommitInfoMessage implements SlackMessageTemplate {
         changedFiles.forEach(file -> {
             message.append("[ " + file.getStatus() + " ] " + file.getFileName() + "\n");
         });
-        message.append("Say \"show me example/file/name.java\" to see the file in question");
+        message.append("Say \"show me example/file/name.java\" to download the file in question");
 
         return new SlackPreparedMessage.Builder()
                 .withMessage(message.toString())
